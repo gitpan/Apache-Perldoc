@@ -4,5 +4,5 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     'NAME'		=> 'Apache::Perldoc',
     'VERSION_FROM'	=> 'lib/Apache/Perldoc.pm', # finds $VERSION
-    'PREREQ_PM'		=> {}, # e.g., Module::Name => 1.1
+    'PREREQ_PM'		=> { Test::More }, # e.g., Module::Name => 1.1
 );
