@@ -1,6 +1,6 @@
 Revision history for Perl extension Apache::Perldoc.
 
-0.01  Fri Jan 26 11:19:26 2001
+0.01  Fri Feb 22 19:56:46 2002
 	- original version; created by h2xs 1.20 with options
-		-AXf -v 0.01 Apache::Perldoc
+		-AXf Apache::Perldoc
 

@@ -1,6 +1,5 @@
 Changes
 MANIFEST
 Makefile.PL
-Perldoc.pm
-test.pl
-Readme
+lib/Apache/Perldoc.pm
+t/00load.t
