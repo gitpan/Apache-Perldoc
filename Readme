@@ -1,0 +1,19 @@
+NAME
+    Apache::Perldoc - mod_perl handler to spooge out HTML perldocs
+
+DESCRIPTION
+    A simple mod_perl handler to give you Perl documentation on installed
+    modules.
+
+    The following configuration should go in your httpd.conf
+
+      <Location /perldoc>
+      SetHandler perl-script
+      PerlHandler Apache::Perldoc
+      </Location>
+
+Author
+    Rich Bowen <rbowen@cre8tivegroup.com>
+
+    http://www.cre8tivegroup.com/
+
