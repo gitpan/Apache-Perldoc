@@ -1,6 +1,6 @@
 package Apache::Perldoc;
 use vars qw( $VERSION );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 sub handler {
     my $r = shift;
@@ -9,18 +9,32 @@ sub handler {
     my $pod = $r->path_info;
     $pod =~ s|/||;
     $pod =~ s|/|::|g;
+    $pod =~ s|\.html$||;  # Intermodule links end with .html
 
     $pod = 'perl' unless $pod;
 
-    use Cwd 'chdir';
-    chdir "/tmp";
-    my $html = qx(perldoc -u $pod | pod2html --htmlroot=/perldoc);
+    $pod =~ s/^f::/-f /;    # If we specify /f/ as our "base", it's a function search
 
-    if ( length($html) > 194 ) {
-        print $html;
-      } else {
-        print
-"No such perldoc. Either you don't have that module installed, or the author neglected to provide documentation.";
+    my $tmp = $r->dir_config( 'TMP' ) || "/tmp";
+    my $perldoc = $r->dir_config( 'PERLDOC' );
+    my $pod2html = $r->dir_config( 'POD2HTML' );
+    
+    if ( $perldoc && $pod2html ) {
+	# We want to run tainted
+	$ENV{PATH} = "/bin";
+    } else {
+	$perldoc ||= "perldoc";
+	$pod2html ||= "pod2html";
+    }
+  
+    # Get the path name and throw away errors on stderr
+    my $filename = qx( $perldoc -l $pod 2> /dev/null );
+
+    if ( $? ) {
+        print "No such perldoc. Either you don't have that module installed, or the author neglected to provide documentation.";
+    } else {
+	chdir $tmp;
+	print qx( $perldoc -u $pod | $pod2html --htmlroot=/perldoc --header );
     }
 }
 
@@ -37,10 +51,10 @@ modules.
 
 The following configuration should go in your httpd.conf
 
-  <Location /perldoc>
-  SetHandler perl-script
-  PerlHandler Apache::Perldoc
-  </Location>
+    <Location /perldoc>
+    SetHandler perl-script
+    PerlHandler Apache::Perldoc
+    </Location>
 
 You can then get documentation for a module C<Foo::Bar> at the URL
 C<http://your.server.com/perldoc/Foo::Bar>
@@ -49,11 +63,34 @@ Note that you can also get the standard Perl documentation with URLs
 like C<http://your.server.com/perldoc/perlfunc> or just
 C<http://your.server.com/perldoc> for the main Perl docs.
 
+=head1 Running under C<PerlTaintCheck>
+
+If you have C<PerlTaintCheck> turned on, then we can't rely on 
+C<$ENV{PATH}> to find F<perldoc> and F<pod2html>.  You'll have to 
+specify the full paths to F<perldoc> and F<pod2html> like so:
+
+    <Location /perldoc>
+    SetHandler	perl-script
+    PerlHandler Apache::Perldoc
+    PerlSetVar	PERLDOC  /usr/local/bin/perldoc
+    PerlSetVar	POD2HTML /usr/local/bin/pod2html
+    </Location>
+
+=head1 Specifying your own C<TMP> directory
+
+C<Apache::Perldoc> assumes that it can use F</tmp> as the temp directory
+to run from, since F<pod2html> requires a place to put its work files.
+You can override this with a
+
+    PerlSetVar TMP /my/temp/directory
+
 =head1 Author
 
 Rich Bowen <rbowen@ApacheAdmin.com>
 
 http://www.ApacheAdmin.com/
+
+Patches from Andy Lester to make it a little bit more secure.
 
 =head1 Caveat
 
