@@ -1,6 +1,6 @@
 package Apache::Perldoc;
 use vars qw( $VERSION );
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 sub handler {
     my $r = shift;
@@ -20,7 +20,7 @@ sub handler {
         print $html;
       } else {
         print
-"No such perldoc. Either you havent installed the module or the author neglected to provide documentation.";
+"No such perldoc. Either you don't have that module installed, or the author neglected to provide documentation.";
     }
 }
 
@@ -45,9 +45,13 @@ The following configuration should go in your httpd.conf
 You can then get documentation for a module C<Foo::Bar> at the URL
 C<http://your.server.com/perldoc/Foo::Bar>
 
+Note that you can also get the standard Perl documentation with URLs
+like C<http://your.server.com/perldoc/perlfunc> or just
+C<http://your.server.com/perldoc> for the main Perl docs.
+
 =head1 Author
 
-Rich Bowen <rbowen@cre8tivegroup.com>
+Rich Bowen <rbowen@ApacheAdmin.com>
 
 http://www.ApacheAdmin.com/
 
@@ -76,6 +80,17 @@ which you can type a module name.
 
 Note that that's all one line, split here for display purposes. I know
 this works in Netscape and Mozilla. Can't vouch for IE.
+
+=head1 LICENSE
+
+This code is released under the HJTI license ("Here, Just Take It"), or,
+if you really want a real license, take your pick of the GPL and the
+Artistic License. Which is to say, this is release under the same terms
+as Perl itself.
+
+The author makes no particular claims to ownership, as this is a really
+obvious idea, and a lot of other people have been doing this for ages. I
+just appear to be the first to put it on CPAN.
 
 =cut
 
