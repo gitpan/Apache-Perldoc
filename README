@@ -7,10 +7,10 @@ DESCRIPTION
 
     The following configuration should go in your httpd.conf
 
-      <Location /perldoc>
-      SetHandler perl-script
-      PerlHandler Apache::Perldoc
-      </Location>
+        <Location /perldoc>
+          SetHandler perl-script
+          PerlHandler Apache::Perldoc
+        </Location>
 
     You can then get documentation for a module "Foo::Bar" at the URL
     "http://your.server.com/perldoc/Foo::Bar"
@@ -19,10 +19,45 @@ DESCRIPTION
     like "http://your.server.com/perldoc/perlfunc" or just
     "http://your.server.com/perldoc" for the main Perl docs.
 
+    Finally, you can search for a particular Perl keyword with
+    "http://your.server.com/perldoc/f::keyword" The 'f' is used by analogy
+    with the "-f" flag to "perldoc".
+
+    In addition to Perl modules, you can have "Apache::Perldoc" convert
+    ".pod" files to HTML with the following configiration:
+
+        <FilesMatch \.pod$>
+          SetHandler perl-script
+          PerlHandler Apache::Perldoc
+        </FilesMatch>
+
+    This has not been extensively tested, but appears to mostly work.
+
+Running under "PerlTaintCheck"
+    If you have "PerlTaintCheck" turned on, then we can't rely on
+    "$ENV{PATH}" to find perldoc and pod2html. You'll have to specify the
+    full paths to perldoc and pod2html like so:
+
+        <Location /perldoc>
+          SetHandler        perl-script
+          PerlHandler Apache::Perldoc
+          PerlSetVar        PERLDOC  /usr/local/bin/perldoc
+          PerlSetVar        POD2HTML /usr/local/bin/pod2html
+        </Location>
+
+Specifying your own "TMP" directory
+    "Apache::Perldoc" assumes that it can use /tmp as the temp directory to
+    run from, since pod2html requires a place to put its work files. You can
+    override this with a
+
+        PerlSetVar TMP /my/temp/directory
+
 Author
     Rich Bowen <rbowen@ApacheAdmin.com>
 
     http://www.ApacheAdmin.com/
+
+    Patches from Andy Lester to make it a little bit more secure.
 
 Caveat
     Note that this is EXCEEDINGLY insecure. Run this at your own risk, and
